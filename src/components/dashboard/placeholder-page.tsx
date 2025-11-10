@@ -1,18 +1,28 @@
-'use client'
+"use client";
 
-import { DashboardLayout } from './dashboard-layout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Construction, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import { DashboardLayout } from "./dashboard-layout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Construction, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 interface PlaceholderPageProps {
-  title: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
-export function PlaceholderPage({ title, description, icon: Icon }: PlaceholderPageProps) {
+export function PlaceholderPage({
+  title,
+  description,
+  icon: Icon,
+}: PlaceholderPageProps) {
   return (
     <DashboardLayout>
       <div className="mb-8">
@@ -33,7 +43,8 @@ export function PlaceholderPage({ title, description, icon: Icon }: PlaceholderP
           </div>
           <CardTitle className="text-2xl">{title}</CardTitle>
           <CardDescription>
-            This feature is coming soon! We're working hard to bring you the best experience.
+            This feature is coming soon! We&apos;re working hard to bring you
+            the best experience.
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
@@ -47,5 +58,5 @@ export function PlaceholderPage({ title, description, icon: Icon }: PlaceholderP
         </CardContent>
       </Card>
     </DashboardLayout>
-  )
-} 
+  );
+}

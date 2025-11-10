@@ -1,100 +1,115 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { Github, Mail, Lock, Eye, EyeOff, User } from 'lucide-react'
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Github, Mail, Lock, Eye, EyeOff, User } from "lucide-react";
 
 export default function RegisterPage() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const router = useRouter()
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleEmailRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      setIsLoading(false)
-      return
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters long')
-      setIsLoading(false)
-      return
+      setError("Password must be at least 8 characters long");
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name,
           email,
           password,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Registration failed')
+        setError(data.error || "Registration failed");
       } else {
         // Auto sign in after successful registration
-        const result = await signIn('credentials', {
+        const result = await signIn("credentials", {
           email,
           password,
           redirect: false,
-        })
+        });
 
         if (result?.error) {
-          setError('Registration successful but sign in failed. Please try signing in.')
+          console.error("Sign in error after registration:", result.error);
+          setError(
+            "Registration successful but sign in failed. Please try signing in."
+          );
         } else {
-          router.push('/dashboard')
+          router.push("/dashboard");
         }
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      console.error("Email registration error:", error);
+      setError("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleSocialRegister = async (provider: string) => {
-    setIsLoading(true)
-    setError('')
+    setIsLoading(true);
+    setError("");
 
     try {
       // For now, show a message that social login is not configured
-      if (provider === 'google' || provider === 'github') {
-        setError(`${provider.charAt(0).toUpperCase() + provider.slice(1)} signup is not configured yet. Please use email/password registration.`)
-        setIsLoading(false)
-        return
+      if (provider === "google" || provider === "github") {
+        setError(
+          `${
+            provider.charAt(0).toUpperCase() + provider.slice(1)
+          } signup is not configured yet. Please use email/password registration.`
+        );
+        setIsLoading(false);
+        return;
       }
 
-      await signIn(provider, { callbackUrl: '/dashboard' })
+      await signIn(provider, { callbackUrl: "/dashboard" });
     } catch (error) {
-      setError('An error occurred. Please try again.')
-      setIsLoading(false)
+      console.error("Social registration error:", error);
+      setError("An error occurred. Please try again.");
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -145,7 +160,7 @@ export default function RegisterPage() {
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -173,7 +188,7 @@ export default function RegisterPage() {
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -200,12 +215,8 @@ export default function RegisterPage() {
                 {error}
               </div>
             )}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Creating account...' : 'Create account'}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Create account"}
             </Button>
           </form>
 
@@ -223,7 +234,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4">
             <Button
               variant="outline"
-              onClick={() => handleSocialRegister('google')}
+              onClick={() => handleSocialRegister("google")}
               disabled={isLoading}
               className="w-full"
             >
@@ -249,7 +260,7 @@ export default function RegisterPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => handleSocialRegister('github')}
+              onClick={() => handleSocialRegister("github")}
               disabled={isLoading}
               className="w-full"
             >
@@ -259,7 +270,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="text-center text-sm">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Link
               href="/auth/login"
               className="text-blue-600 hover:text-blue-500 font-medium"
@@ -270,5 +281,5 @@ export default function RegisterPage() {
         </CardContent>
       </Card>
     </div>
-  )
-} 
+  );
+}

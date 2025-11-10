@@ -1,122 +1,143 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { 
-  FileText, 
-  Edit, 
-  Download, 
-  Trash2, 
-  Eye, 
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  FileText,
+  Edit,
+  Download,
+  Trash2,
+  Eye,
   Calendar,
   Clock,
   Star,
   MoreHorizontal,
-  Upload
-} from 'lucide-react'
-import { apiClient } from '@/lib/api'
-import { mockResumes } from '@/lib/mock-data'
-import { Resume as ResumeType } from '@/types'
+  Upload,
+} from "lucide-react";
+import { apiClient } from "@/lib/api";
+import { mockResumes } from "@/lib/mock-data";
+import { Resume as ResumeType } from "@/types";
 
 interface Resume {
-  id: string
-  name: string
-  originalName: string
-  createdAt: string
-  updatedAt: string
-  status: 'draft' | 'generated' | 'optimized'
-  template: string
-  compatibilityScore?: number
-  jobDescription?: string
+  id: string;
+  name: string;
+  originalName: string;
+  createdAt: string;
+  updatedAt: string;
+  status: "draft" | "generated" | "optimized";
+  template: string;
+  compatibilityScore?: number;
+  jobDescription?: string;
 }
 
 // Helper to convert API resume to display format
 const convertResume = (resume: ResumeType): Resume => {
   return {
     id: resume.id,
-    name: resume.job_description ? `${resume.job_description.split(' at ')[0]} Resume` : 'Resume',
-    originalName: resume.s3_file_path?.split('/').pop() || 'resume.pdf',
+    name: resume.job_description
+      ? `${resume.job_description.split(" at ")[0]} Resume`
+      : "Resume",
+    originalName: resume.s3_file_path?.split("/").pop() || "resume.pdf",
     createdAt: resume.created_at,
     updatedAt: resume.updated_at,
-    status: resume.ai_generated_content ? (resume.compatibility_score ? 'optimized' : 'generated') : 'draft',
+    status: resume.ai_generated_content
+      ? resume.compatibility_score
+        ? "optimized"
+        : "generated"
+      : "draft",
     template: resume.template_used,
     compatibilityScore: resume.compatibility_score,
     jobDescription: resume.job_description,
-  }
-}
+  };
+};
 
 export function ResumeList() {
-  const [resumes, setResumes] = useState<Resume[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedResume, setSelectedResume] = useState<Resume | null>(null)
+  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  // const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
 
   useEffect(() => {
     const fetchResumes = async () => {
       try {
-        const response = await apiClient.getResumes()
+        const response = await apiClient.getResumes();
         if (response.success && response.data) {
-          const apiResumes = Array.isArray(response.data) ? response.data : []
-          setResumes(apiResumes.map(convertResume))
+          const apiResumes = Array.isArray(response.data) ? response.data : [];
+          setResumes(apiResumes.map(convertResume));
         } else {
           // Fallback to mock data
-          setResumes(mockResumes.map(convertResume))
+          setResumes(mockResumes.map(convertResume));
         }
       } catch (error) {
+        console.error("Failed to fetch resumes:", error);
         // Fallback to mock data
-        setResumes(mockResumes.map(convertResume))
+        setResumes(mockResumes.map(convertResume));
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchResumes()
-  }, [])
+    fetchResumes();
+  }, []);
 
   const deleteResume = async (id: string) => {
     try {
-      await apiClient.deleteResume(id)
-      setResumes(prev => prev.filter(resume => resume.id !== id))
+      await apiClient.deleteResume(id);
+      setResumes((prev) => prev.filter((resume) => resume.id !== id));
     } catch (error) {
+      console.error("Failed to delete resume:", error);
       // Still remove from UI even if API call fails (for mock mode)
-      setResumes(prev => prev.filter(resume => resume.id !== id))
+      setResumes((prev) => prev.filter((resume) => resume.id !== id));
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'optimized':
-        return 'text-green-600 bg-green-100'
-      case 'generated':
-        return 'text-blue-600 bg-blue-100'
-      case 'draft':
-        return 'text-gray-600 bg-gray-100'
+      case "optimized":
+        return "text-green-600 bg-green-100";
+      case "generated":
+        return "text-blue-600 bg-blue-100";
+      case "draft":
+        return "text-gray-600 bg-gray-100";
       default:
-        return 'text-gray-600 bg-gray-100'
+        return "text-gray-600 bg-gray-100";
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'optimized':
-        return <Star className="h-4 w-4" />
-      case 'generated':
-        return <FileText className="h-4 w-4" />
-      case 'draft':
-        return <Edit className="h-4 w-4" />
+      case "optimized":
+        return <Star className="h-4 w-4" />;
+      case "generated":
+        return <FileText className="h-4 w-4" />;
+      case "draft":
+        return <Edit className="h-4 w-4" />;
       default:
-        return <FileText className="h-4 w-4" />
+        return <FileText className="h-4 w-4" />;
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   if (isLoading) {
     return (
@@ -126,7 +147,7 @@ export function ResumeList() {
           <p className="mt-2 text-gray-600">Loading resumes...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -150,7 +171,9 @@ export function ResumeList() {
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-lg truncate">{resume.name}</CardTitle>
+                  <CardTitle className="text-lg truncate">
+                    {resume.name}
+                  </CardTitle>
                   <CardDescription className="text-sm">
                     {resume.originalName}
                   </CardDescription>
@@ -165,24 +188,33 @@ export function ResumeList() {
                     <DialogHeader>
                       <DialogTitle>Resume Actions</DialogTitle>
                       <DialogDescription>
-                        Choose an action for "{resume.name}"
+                        Choose an action for &quot;{resume.name}&quot;
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-2">
-                      <Button variant="outline" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
                         <Eye className="mr-2 h-4 w-4" />
                         Preview
                       </Button>
-                      <Button variant="outline" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </Button>
-                      <Button variant="outline" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
                         <Download className="mr-2 h-4 w-4" />
                         Download
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="w-full justify-start text-red-600 hover:text-red-700"
                         onClick={() => deleteResume(resume.id)}
                       >
@@ -197,9 +229,14 @@ export function ResumeList() {
             <CardContent className="space-y-4">
               {/* Status Badge */}
               <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(resume.status)}`}>
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                    resume.status
+                  )}`}
+                >
                   {getStatusIcon(resume.status)}
-                  {resume.status.charAt(0).toUpperCase() + resume.status.slice(1)}
+                  {resume.status.charAt(0).toUpperCase() +
+                    resume.status.slice(1)}
                 </span>
                 {resume.compatibilityScore && (
                   <span className="text-xs text-gray-500">
@@ -216,7 +253,8 @@ export function ResumeList() {
               {/* Job Description */}
               {resume.jobDescription && (
                 <div className="text-sm text-gray-600">
-                  <span className="font-medium">Target:</span> {resume.jobDescription}
+                  <span className="font-medium">Target:</span>{" "}
+                  {resume.jobDescription}
                 </div>
               )}
 
@@ -253,7 +291,9 @@ export function ResumeList() {
         <Card>
           <CardContent className="text-center py-12">
             <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No resumes yet</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No resumes yet
+            </h3>
             <p className="text-gray-600 mb-4">
               Upload your first resume to get started with AI optimization
             </p>
@@ -265,5 +305,5 @@ export function ResumeList() {
         </Card>
       )}
     </div>
-  )
-} 
+  );
+}

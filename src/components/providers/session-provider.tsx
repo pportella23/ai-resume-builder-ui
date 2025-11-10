@@ -1,20 +1,25 @@
-'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { SessionProvider as NextAuthSessionProvider, useSession } from 'next-auth/react'
-import { useEffect } from 'react'
+"use client";
+
+import {
+  SessionProvider as NextAuthSessionProvider,
+  useSession,
+} from "next-auth/react";
+import { useEffect } from "react";
 
 function TokenSync() {
-  const { data } = useSession()
+  const { data } = useSession();
   useEffect(() => {
-    const accessToken = (data as any)?.accessToken
-    if (typeof window === 'undefined') return
+    const accessToken = (data as any)?.accessToken;
+    if (typeof window === "undefined") return;
     if (accessToken) {
-      localStorage.setItem('accessToken', accessToken as string)
+      localStorage.setItem("accessToken", accessToken as string);
     } else {
-      localStorage.removeItem('accessToken')
+      localStorage.removeItem("accessToken");
     }
-  }, [data])
-  return null
+  }, [data]);
+  return null;
 }
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
@@ -23,5 +28,5 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       <TokenSync />
       {children}
     </NextAuthSessionProvider>
-  )
-} 
+  );
+}

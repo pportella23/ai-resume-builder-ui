@@ -1,24 +1,30 @@
-'use client'
+"use client";
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowRight, FileText, Zap, Globe, Download } from 'lucide-react'
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ArrowRight, FileText, Zap, Globe, Download } from "lucide-react";
 
 export default function HomePage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/dashboard')
+    if (status === "authenticated") {
+      router.push("/dashboard");
     }
-  }, [status, router])
+  }, [status, router]);
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -26,7 +32,7 @@ export default function HomePage() {
           <p className="mt-2 text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -36,7 +42,9 @@ export default function HomePage() {
         <nav className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <FileText className="h-8 w-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">AI Resume Builder</span>
+            <span className="text-2xl font-bold text-gray-900">
+              AI Resume Builder
+            </span>
           </div>
           <div className="flex gap-4">
             <Link href="/auth/login">
@@ -57,7 +65,7 @@ export default function HomePage() {
             <span className="text-blue-600"> Resumes</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Upload your resume, paste a job description, and get a customized, 
+            Upload your resume, paste a job description, and get a customized,
             AI-optimized resume tailored to your target position.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -86,8 +94,8 @@ export default function HomePage() {
               </div>
               <CardTitle>AI-Powered Optimization</CardTitle>
               <CardDescription>
-                Our AI analyzes job descriptions and optimizes your resume to match 
-                the requirements perfectly.
+                Our AI analyzes job descriptions and optimizes your resume to
+                match the requirements perfectly.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -99,8 +107,8 @@ export default function HomePage() {
               </div>
               <CardTitle>Portfolio Generation</CardTitle>
               <CardDescription>
-                Automatically generate a professional portfolio website to showcase 
-                your work and skills.
+                Automatically generate a professional portfolio website to
+                showcase your work and skills.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -112,7 +120,7 @@ export default function HomePage() {
               </div>
               <CardTitle>One-Click Export</CardTitle>
               <CardDescription>
-                Export your resume in multiple formats: PDF, Word, and HTML with 
+                Export your resume in multiple formats: PDF, Word, and HTML with
                 professional templates.
               </CardDescription>
             </CardHeader>
@@ -126,7 +134,8 @@ export default function HomePage() {
           <CardHeader>
             <CardTitle className="text-3xl">Ready to Get Started?</CardTitle>
             <CardDescription className="text-lg">
-              Join thousands of job seekers who have optimized their resumes with AI
+              Join thousands of job seekers who have optimized their resumes
+              with AI
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -147,5 +156,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

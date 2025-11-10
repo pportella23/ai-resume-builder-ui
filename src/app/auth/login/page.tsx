@@ -1,66 +1,78 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { Github, Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Github, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setError('Invalid email or password')
+        setError("Invalid email or password");
       } else {
-        router.push('/dashboard')
+        router.push("/dashboard");
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      console.error("Email login error:", error);
+      setError("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleSocialLogin = async (provider: string) => {
-    setIsLoading(true)
-    setError('')
+    setIsLoading(true);
+    setError("");
 
     try {
       // For now, show a message that social login is not configured
-      if (provider === 'google' || provider === 'github') {
-        setError(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login is not configured yet. Please use email/password login.`)
-        setIsLoading(false)
-        return
+      if (provider === "google" || provider === "github") {
+        setError(
+          `${
+            provider.charAt(0).toUpperCase() + provider.slice(1)
+          } login is not configured yet. Please use email/password login.`
+        );
+        setIsLoading(false);
+        return;
       }
 
-      await signIn(provider, { callbackUrl: '/dashboard' })
+      await signIn(provider, { callbackUrl: "/dashboard" });
     } catch (error) {
-      setError('An error occurred. Please try again.')
-      setIsLoading(false)
+      console.error("Social login error:", error);
+      setError("An error occurred. Please try again.");
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -96,7 +108,7 @@ export default function LoginPage() {
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -123,12 +135,8 @@ export default function LoginPage() {
                 {error}
               </div>
             )}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 
@@ -146,7 +154,7 @@ export default function LoginPage() {
           <div className="grid grid-cols-2 gap-4">
             <Button
               variant="outline"
-              onClick={() => handleSocialLogin('google')}
+              onClick={() => handleSocialLogin("google")}
               disabled={isLoading}
               className="w-full"
             >
@@ -172,7 +180,7 @@ export default function LoginPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => handleSocialLogin('github')}
+              onClick={() => handleSocialLogin("github")}
               disabled={isLoading}
               className="w-full"
             >
@@ -182,7 +190,7 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center text-sm">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{" "}
             <Link
               href="/auth/register"
               className="text-blue-600 hover:text-blue-500 font-medium"
@@ -193,5 +201,5 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
-  )
-} 
+  );
+}
